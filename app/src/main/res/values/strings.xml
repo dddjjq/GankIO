@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">GankIo</string>
+    <string name="main_title">Gank.io</string>
+    <string name="request_fail">请求失败!</string>
+</resources>
