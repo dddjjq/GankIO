@@ -7,15 +7,15 @@ import com.dingyl.gankio.entity.AndroidCategory;
 import com.dingyl.gankio.view.AndroidView;
 import com.dingyl.gankio.view.BaseView;
 
-import rx.Observer;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
-import rx.subscriptions.CompositeSubscription;
+import io.reactivex.Observer;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 
-public class AndroidPresenter implements BasePresenter{
+
+public class AndroidPresenter extends BasePresenter{
 
     private Context context;
-    private CompositeSubscription compositeSubscription;
     private DataManager manager;
     private AndroidView androidView;
     private AndroidCategory mAndroidCategory;
@@ -27,43 +27,36 @@ public class AndroidPresenter implements BasePresenter{
     @Override
     public void onCreate() {
         manager = new DataManager(context);
-        compositeSubscription = new CompositeSubscription();
     }
 
-    @Override
-    public void onStop() {
-        if(compositeSubscription.hasSubscriptions()){
-            compositeSubscription.unsubscribe();
-        }
-    }
-
-    @Override
-    public void attachView(BaseView view) {
-        androidView = (AndroidView)view;
-    }
 
     public void getAndroidCategory(int count,int page){
-        compositeSubscription.add(manager.getAndroidCategory(count,page)
+        manager.getAndroidCategory(count,page)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<AndroidCategory>() {
                     @Override
-                    public void onCompleted() {
+                    public void onNext(AndroidCategory androidCategory) {
                         if(mAndroidCategory != null){
                             androidView.onSuccess(mAndroidCategory);
                         }
                     }
-
                     @Override
                     public void onError(Throwable e) {
                         e.printStackTrace();
                     }
 
                     @Override
-                    public void onNext(AndroidCategory androidCategory) {
-                        mAndroidCategory = androidCategory;
+                    public void onComplete() {
+
                     }
-                })
-        );
+
+                    @Override
+                    public void onSubscribe(Disposable d) {
+
+                    }
+
+
+                });
     }
 }

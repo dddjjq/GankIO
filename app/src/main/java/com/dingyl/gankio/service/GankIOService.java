@@ -8,14 +8,14 @@ import com.dingyl.gankio.entity.FuliCategory;
 import com.dingyl.gankio.entity.IOSCategory;
 import com.dingyl.gankio.entity.RestVideoCategory;
 
+import io.reactivex.Observable;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
-import rx.Observable;
 
 public interface GankIOService {
 
     @GET("Android/count/{count}/page{page}")
-    Observable<AndroidCategory> getAndroidCategory(@Path("count")int count,@Path("page")int page);
+    Observable<AndroidCategory> getAndroidCategory(@Path("count")int count, @Path("page")int page);
 
     @GET("IOS/count/{count}/page{page}")
     Observable<IOSCategory> getIOSCategory(@Path("count")int count, @Path("page")int page);

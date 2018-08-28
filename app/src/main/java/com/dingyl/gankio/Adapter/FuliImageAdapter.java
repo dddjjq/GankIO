@@ -1,15 +1,18 @@
 package com.dingyl.gankio.Adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.dingyl.gankio.R;
+import com.dingyl.gankio.activity.FuliImageActivity;
 import com.dingyl.gankio.entity.FuliCategory;
 import com.dingyl.gankio.utils.Tools;
 
@@ -29,17 +32,27 @@ public class FuliImageAdapter extends RecyclerView.Adapter<FuliImageAdapter.Fuli
     @Override
     public FuliViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.fuli_item,parent,false);
-        FuliViewHolder viewHolder = new FuliViewHolder(view);
-        return viewHolder;
+        FuliViewHolder holder = new FuliViewHolder(view);
+
+        return holder;
     }
 
     @Override
-    public void onBindViewHolder(FuliViewHolder holder, int position) {
+    public void onBindViewHolder(FuliViewHolder holder, final int position) {
         Tools.loadImage(context,fuliCategoryList.get(position).getUrl(),holder.fuliItemImage);
         Log.d(TAG,"fuliCategoryList.get(position).getUrl()" + fuliCategoryList.get(position).getUrl());
         holder.fuliItemDate.setText(fuliCategoryList.get(position).getDesc());
         holder.fuliItemContent.setText(fuliCategoryList.get(position).getDesc());
         //TODO to set content summary
+
+        holder.fuliItemImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(context, FuliImageActivity.class);
+                intent.putExtra("fuli_url",fuliCategoryList.get(position).getUrl());
+                context.startActivity(intent);
+            }
+        });
     }
 
     @Override

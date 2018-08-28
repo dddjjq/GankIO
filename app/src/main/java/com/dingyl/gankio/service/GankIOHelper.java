@@ -6,9 +6,8 @@ import com.google.gson.GsonBuilder;
 
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
-import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
-import rx.subscriptions.CompositeSubscription;
 
 public class GankIOHelper {
     private Context context;
@@ -34,7 +33,7 @@ public class GankIOHelper {
                 .baseUrl("https://gank.io/api/data/")
                 .client(client)
                 .addConverterFactory(factory)
-                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .build();
     }
 

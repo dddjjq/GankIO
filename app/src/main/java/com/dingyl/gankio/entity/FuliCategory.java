@@ -1,20 +1,22 @@
 package com.dingyl.gankio.entity;
 
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 public class FuliCategory implements BaseCategory<FuliCategory.FuliBeans>{
 
     private boolean error;
 
-    public void setResults(List<FuliBeans> results) {
+    public void setResults(ArrayList<FuliBeans> results) {
         this.results = results;
     }
 
-    public List<FuliBeans> getResults(){
+    public ArrayList<FuliBeans> getResults(){
         return results;
     }
 
-    private List<FuliBeans> results;
+    private ArrayList<FuliBeans> results;
 
     public boolean isError() {
         return error;
@@ -25,7 +27,7 @@ public class FuliCategory implements BaseCategory<FuliCategory.FuliBeans>{
     }
 
 
-    public class FuliBeans{
+    public class FuliBeans implements Serializable{
 
         private String _id;
         private String createdAt;

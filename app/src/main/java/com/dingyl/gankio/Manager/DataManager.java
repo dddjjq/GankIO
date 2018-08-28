@@ -7,7 +7,7 @@ import com.dingyl.gankio.entity.FuliCategory;
 import com.dingyl.gankio.service.GankIOHelper;
 import com.dingyl.gankio.service.GankIOService;
 
-import rx.Observable;
+import io.reactivex.Observable;
 
 
 public class DataManager {

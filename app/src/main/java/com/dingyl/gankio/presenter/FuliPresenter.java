@@ -1,74 +1,100 @@
 package com.dingyl.gankio.presenter;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.dingyl.gankio.Manager.DataManager;
+import com.dingyl.gankio.MyApplication;
+import com.dingyl.gankio.activity.IViewBind.IMainActivity;
+import com.dingyl.gankio.diskCacheManager.DiskCacheManager;
 import com.dingyl.gankio.entity.FuliCategory;
-import com.dingyl.gankio.view.BaseView;
-import com.dingyl.gankio.view.FuliView;
+import com.dingyl.gankio.utils.Constants;
 
-import retrofit2.Retrofit;
-import rx.Observer;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
-import rx.subscriptions.CompositeSubscription;
+import java.util.ArrayList;
 
-public class FuliPresenter implements BasePresenter {
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Function;
+import io.reactivex.schedulers.Schedulers;
+import io.reactivex.Observer;
+
+public class FuliPresenter extends BasePresenter {
 
     private static final String TAG = "FuliPresenter";
     private Context context;
-    private CompositeSubscription compositeSubscription;
     private DataManager dataManager;
-    private FuliView fuliView;
-    private FuliCategory mFuliCategory;
+    private IMainActivity iMainActivity;
+    DiskCacheManager diskCacheManager = new DiskCacheManager(MyApplication.getContext(),Constants.FULI_IMAGE_CACHE);
 
-    public FuliPresenter(Context context){
+    public FuliPresenter(Context context,IMainActivity iMainActivity){
         this.context = context;
+        this.iMainActivity = iMainActivity;
     }
 
     @Override
     public void onCreate() {
         dataManager = new DataManager(context);
-        compositeSubscription = new CompositeSubscription();
     }
 
-    @Override
-    public void onStop() {
-        if(compositeSubscription.hasSubscriptions()){
-            compositeSubscription.unsubscribe();
-        }
-    }
-
-    @Override
-    public void attachView(BaseView view) {
-        fuliView = (FuliView)view;
-    }
 
     public void getFuliCategory(int count,int page){
-        compositeSubscription.add(dataManager.getFuliCategory(count,page)
+        iMainActivity.showProgressBar();
+        dataManager.getFuliCategory(count,page)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<FuliCategory>() {
+                .map(new Function<FuliCategory, ArrayList<FuliCategory.FuliBeans>>() {
                     @Override
-                    public void onCompleted() {
-                        if(mFuliCategory != null){
+                    public ArrayList<FuliCategory.FuliBeans> apply(FuliCategory fuliCategory) {
+                        ArrayList<FuliCategory.FuliBeans> fuliBeans = fuliCategory.getResults();
+                        if(fuliBeans != null){
+                            makeCache(fuliBeans);
+                            Log.d(TAG,"fuliBeans != null");
+                        }
+                        return fuliBeans;
+                    }
+                })
+                .subscribe(new Observer<ArrayList<FuliCategory.FuliBeans>>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                        addDisposable(d);
+                    }
+
+                    @Override
+                    public void onNext(ArrayList<FuliCategory.FuliBeans> fuliBeans) {
+                        if(fuliBeans != null){
                             Log.d(TAG,"onCompleted");
-                            Log.d(TAG,mFuliCategory.getResults().size()+"");
-                            fuliView.onSuccess(mFuliCategory);
+                            Log.d(TAG,fuliBeans.size()+"");
+                            iMainActivity.onSuccess(fuliBeans);
                         }
                     }
 
                     @Override
                     public void onError(Throwable e) {
                         e.printStackTrace();
+                        iMainActivity.onError();
                     }
 
                     @Override
-                    public void onNext(FuliCategory fuliCategory) {
-                        mFuliCategory = fuliCategory;
+                    public void onComplete() {
+                        iMainActivity.hideProgressBar();
                     }
-                })
-        );
+                });
+
+    }
+
+    public void makeCache(ArrayList<FuliCategory.FuliBeans> fuliBeans){
+        diskCacheManager.put(Constants.FULI_IMAGE_CACHE_KEY,fuliBeans);
+    }
+
+    public void loadCache(){
+        ArrayList<FuliCategory.FuliBeans> fuliBeans = diskCacheManager.getSerializable(Constants.FULI_IMAGE_CACHE_KEY);
+        if(fuliBeans != null){
+            iMainActivity.onSuccess(fuliBeans);
+            Log.d(TAG,"loadCache onSuccess");
+        }else{
+            iMainActivity.onError();
+            Log.d(TAG,"loadCache onError");
+        }
     }
 }
