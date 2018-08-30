@@ -1,5 +1,6 @@
 package com.dingyl.gankio.activity;
 
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -17,6 +18,7 @@ import com.dingyl.gankio.entity.FuliCategory;
 import com.dingyl.gankio.presenter.FuliPresenter;
 import com.dingyl.gankio.utils.NetworkUtils;
 import com.dingyl.gankio.view.FuliView;
+import com.dingyl.gankio.view.MySwipeRefreshLayout;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,11 +27,11 @@ public class MainActivity extends AppCompatActivity implements IMainActivity{
 
     private static final String TAG = "MainActivity-TAG";
     private RecyclerView fuliRecycler;
-    private LinearLayout layout;
+    private MySwipeRefreshLayout swipeRefreshLayout;
     private FuliImageAdapter adapter;
     private List<FuliCategory.FuliBeans> fuliBeansList;
     private FuliPresenter fuliPresenter;
-
+    private int mPage = 1;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,13 +39,29 @@ public class MainActivity extends AppCompatActivity implements IMainActivity{
         setContentView(R.layout.activity_main);
         initView();
         initData();
-
+        setOnScroll();
     }
 
+    @Override
+    public void onPostCreate(Bundle savedInstanceState){
+        super.onPostCreate(savedInstanceState);
+        swipeRefreshLayout.setColorSchemeResources(R.color.colorAccent, R.color.colorPrimary, R.color.colorPrimaryDark);
+        swipeRefreshLayout.setOnRefreshListener(onRefreshListener);
+        swipeRefreshLayout.setContentRecycler(fuliRecycler);
+        swipeRefreshLayout.setLoadDataListener(new MySwipeRefreshLayout.LoadDataListener() {
+            @Override
+            public void loadData() {
+                swipeRefreshLayout.setRefreshing(true);
+                mPage ++ ;
+                fuliPresenter.getFuliCategory(10,mPage);
+            }
+        });
+    }
     private void initView(){
         fuliRecycler = findViewById(R.id.main_recycler);
         fuliRecycler.setLayoutManager(new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false));
-        layout = findViewById(R.id.progress_layout);
+        swipeRefreshLayout = findViewById(R.id.swipe_layout);
+
     }
 
     public void initData(){
@@ -68,23 +86,50 @@ public class MainActivity extends AppCompatActivity implements IMainActivity{
 
     @Override
     public void onSuccess(ArrayList<FuliCategory.FuliBeans> fuliBeans) {
-        fuliBeansList = fuliBeans;
-        adapter = new FuliImageAdapter(fuliBeans,this);
+        if(fuliBeansList.containsAll(fuliBeans)){
+
+        }else{
+            fuliBeansList.addAll(fuliBeans);
+        }
+
+        adapter = new FuliImageAdapter(fuliBeansList,this);
         fuliRecycler.setAdapter(adapter);
     }
 
     @Override
     public void showProgressBar() {
-        layout.setVisibility(View.VISIBLE);
+        swipeRefreshLayout.setRefreshing(true);
     }
 
     @Override
     public void hideProgressBar() {
-        layout.setVisibility(View.GONE);
+        swipeRefreshLayout.setRefreshing(false);
     }
 
     @Override
     public void onError() {
 
     }
+
+    private void setOnScroll(){
+        fuliRecycler.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+            }
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+            }
+        });
+    }
+
+    SwipeRefreshLayout.OnRefreshListener onRefreshListener = new SwipeRefreshLayout.OnRefreshListener() {
+        @Override
+        public void onRefresh() {
+            fuliPresenter.getFuliCategory(10,1);
+        }
+    };
+
 }

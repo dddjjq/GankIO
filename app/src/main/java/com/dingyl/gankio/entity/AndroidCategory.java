@@ -1,23 +1,22 @@
 package com.dingyl.gankio.entity;
 
-import java.util.List;
+import java.io.Serializable;
+import java.util.ArrayList;
 
-public class AndroidCategory implements BaseCategory{
+public class AndroidCategory implements BaseCategory<AndroidCategory.AndroidBean>{
     private int count;
     private boolean error;
-    private List<AndroidBean> results;
 
-    public List<AndroidBean> getFuliBeansList() {
+    @Override
+    public ArrayList<AndroidBean> getResults() {
         return results;
     }
 
-    public void setResults(List<AndroidBean> results) {
+    public void setResults(ArrayList<AndroidBean> results) {
         this.results = results;
     }
 
-    public List<AndroidBean> getResults(){
-        return results;
-    }
+    private ArrayList<AndroidBean> results;
 
     public int getCount() {
         return count;
@@ -36,7 +35,7 @@ public class AndroidCategory implements BaseCategory{
     }
 
 
-    public static class AndroidBean{
+    public static class AndroidBean implements Serializable{
         private String desc;
         private String ganhuo_id;
         private String publishedAt;
