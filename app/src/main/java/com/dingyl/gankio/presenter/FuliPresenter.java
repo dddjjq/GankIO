@@ -1,7 +1,6 @@
 package com.dingyl.gankio.presenter;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.dingyl.gankio.Manager.DataManager;
@@ -17,7 +16,6 @@ import com.dingyl.gankio.utils.Constants;
 import java.util.ArrayList;
 
 import io.reactivex.Observable;
-import io.reactivex.Scheduler;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.BiFunction;
@@ -31,7 +29,7 @@ public class FuliPresenter extends BasePresenter {
     private Context context;
     private DataManager dataManager;
     private IMainActivity iMainActivity;
-    DiskCacheManager diskCacheManager = new DiskCacheManager(MyApplication.getContext(),Constants.FULI_IMAGE_CACHE_KEY);
+    private DiskCacheManager diskCacheManager = new DiskCacheManager(MyApplication.getContext(),Constants.FULI_IMAGE_CACHE_KEY);
 
     public FuliPresenter(Context context,IMainActivity iMainActivity){
         this.context = context;
@@ -46,7 +44,6 @@ public class FuliPresenter extends BasePresenter {
 
     public void getGankData(int count,int page){
         iMainActivity.showProgressBar();
-        Log.d(TAG,"showProgressBar");
         Observable.zip(dataManager.getFuliCategory(count, page),dataManager.getAndroidCategory(count * 5,page),
             new BiFunction<FuliCategory,AndroidCategory,GankData>(){
                 @Override
@@ -66,12 +63,8 @@ public class FuliPresenter extends BasePresenter {
                         GankBeanData gankBeanData = new GankBeanData();
                         gankBeanData.setAndroidBeans(gankData.getAndroidCategory().getResults());
                         gankBeanData.setFuliBeans(gankData.getFuliCategory().getResults());
-                        if(gankBeanData != null){
-                            makeCache(gankBeanData);
-                            Log.d(TAG,"gankBeanData != null");
-                        }else{
-                            Log.d(TAG,"gankBeanData == null");
-                        }
+                        makeCache(gankBeanData);
+                        Log.d(TAG,"gankBeanData != null");
                         return gankBeanData;
                     }
                 })
@@ -145,7 +138,7 @@ public class FuliPresenter extends BasePresenter {
 
     }
 
-    public void makeCache(GankBeanData gankBeanData){
+    private void makeCache(GankBeanData gankBeanData){
         diskCacheManager.put(Constants.FULI_IMAGE_CACHE_KEY,gankBeanData);
     }
 
