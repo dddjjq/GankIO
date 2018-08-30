@@ -32,9 +32,11 @@ public class MainActivity extends AppCompatActivity implements IMainActivity{
     private RecyclerView fuliRecycler;
     private MySwipeRefreshLayout swipeRefreshLayout;
     private FuliImageAdapter adapter;
-    private List<FuliCategory.FuliBeans> fuliBeansList;
-    private List<AndroidCategory.AndroidBean> androidBeanList;
+    private ArrayList<FuliCategory.FuliBeans> fuliBeansList;
+    private ArrayList<AndroidCategory.AndroidBean> androidBeanList;
     private FuliPresenter fuliPresenter;
+    private GankBeanData newGankbeanData;
+
     private int mPage = 1;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,6 +73,7 @@ public class MainActivity extends AppCompatActivity implements IMainActivity{
     public void initData(){
         fuliBeansList = new ArrayList<>();
         androidBeanList = new ArrayList<>();
+        newGankbeanData = new GankBeanData();
         fuliPresenter = new FuliPresenter(this,this);
         fuliPresenter.onCreate();
         if(NetworkUtils.isNetWorkAvailable(this)){
@@ -97,7 +100,9 @@ public class MainActivity extends AppCompatActivity implements IMainActivity{
         if(!androidBeanList.containsAll(gankBeanData.getAndroidBeans())){
             androidBeanList.addAll(gankBeanData.getAndroidBeans());
         }
-        adapter = new FuliImageAdapter(gankBeanData,this);
+        newGankbeanData.setFuliBeans(fuliBeansList);
+        newGankbeanData.setAndroidBeans(androidBeanList);
+        adapter = new FuliImageAdapter(newGankbeanData,this);
         fuliRecycler.setAdapter(adapter);
     }
 
