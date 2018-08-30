@@ -42,58 +42,59 @@ public class AndroidPresenter extends BasePresenter{
     }
 
 
-    public void getAndroidCategory(int count,int page){
-        manager.getAndroidCategory(count,page)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .map(new Function<AndroidCategory, ArrayList<AndroidCategory.AndroidBean>>() {
-                    @Override
-                    public ArrayList<AndroidCategory.AndroidBean> apply(AndroidCategory category){
-                        ArrayList<AndroidCategory.AndroidBean> androidBeans = category.getResults();
-                        if(androidBeans != null){
-                            makeCache(androidBeans);
-                        }
-                    }
-                })
-                .subscribe(new Observer<AndroidCategory>() {
-                    @Override
-                    public void onSubscribe(Disposable d) {
-
-                    }
-                    @Override
-                    public void onNext(AndroidCategory androidCategory) {
-                        if(androidBeans != null){
-                            iMainActivity.onSuccess(androidBeans);
-                        }
-                    }
-                    @Override
-                    public void onError(Throwable e) {
-                        e.printStackTrace();
-                    }
-
-                    @Override
-                    public void onComplete() {
-
-                    }
-
-
-
-
-                });
-    }
-
-    public void makeCache(ArrayList<AndroidCategory.AndroidBean> androidBeans){
-        diskCacheManager.put(Constants.ANDROID_CATEGOTY_CACHE_KEY,androidBeans);
-    }
-
-    public void loadCache(){
-        ArrayList<AndroidCategory.AndroidBean> androidBeans = diskCacheManager.getSerializable(Constants.ANDROID_CATEGOTY_CACHE_KEY);
-        if(androidBeans != null){
-            iMainActivity.onSuccess(androidBeans);
-            Log.d(TAG,"loadCache onSuccess");
-        }else{
-            iMainActivity.onError();
-            Log.d(TAG,"loadCache onError");
-        }
-    }
+//    public void getAndroidCategory(int count,int page){
+//        manager.getAndroidCategory(count,page)
+//                .subscribeOn(Schedulers.io())
+//                .observeOn(AndroidSchedulers.mainThread())
+//                .map(new Function<AndroidCategory, ArrayList<AndroidCategory.AndroidBean>>() {
+//                    @Override
+//                    public ArrayList<AndroidCategory.AndroidBean> apply(AndroidCategory category){
+//                        ArrayList<AndroidCategory.AndroidBean> androidBeans = category.getResults();
+//                        if(androidBeans != null){
+//                            makeCache(androidBeans);
+//                        }
+//                        return androidBeans;
+//                    }
+//                })
+//                .subscribe(new Observer<AndroidCategory>() {
+//                    @Override
+//                    public void onSubscribe(Disposable d) {
+//
+//                    }
+//                    @Override
+//                    public void onNext(AndroidCategory androidCategory) {
+//                        if(androidBeans != null){
+//                            iMainActivity.onSuccess(androidCategory);
+//                        }
+//                    }
+//                    @Override
+//                    public void onError(Throwable e) {
+//                        e.printStackTrace();
+//                    }
+//
+//                    @Override
+//                    public void onComplete() {
+//
+//                    }
+//
+//
+//
+//
+//                });
+//    }
+//
+//    public void makeCache(ArrayList<AndroidCategory.AndroidBean> androidBeans){
+//        diskCacheManager.put(Constants.ANDROID_CATEGOTY_CACHE_KEY,androidBeans);
+//    }
+//
+//    public void loadCache(){
+//        ArrayList<AndroidCategory.AndroidBean> androidBeans = diskCacheManager.getSerializable(Constants.ANDROID_CATEGOTY_CACHE_KEY);
+//        if(androidBeans != null){
+//            //iMainActivity.onSuccess(androidBeans);
+//            Log.d(TAG,"loadCache onSuccess");
+//        }else{
+//            iMainActivity.onError();
+//            Log.d(TAG,"loadCache onError");
+//        }
+//    }
 }

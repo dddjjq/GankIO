@@ -13,7 +13,9 @@ import android.widget.TextView;
 
 import com.dingyl.gankio.R;
 import com.dingyl.gankio.activity.FuliImageActivity;
+import com.dingyl.gankio.entity.AndroidCategory;
 import com.dingyl.gankio.entity.FuliCategory;
+import com.dingyl.gankio.entity.GankBeanData;
 import com.dingyl.gankio.utils.Tools;
 
 import java.util.List;
@@ -21,11 +23,14 @@ import java.util.List;
 public class FuliImageAdapter extends RecyclerView.Adapter<FuliImageAdapter.FuliViewHolder> {
 
     private final static String TAG = "FuliImageAdapter";
-    private List<FuliCategory.FuliBeans> fuliCategoryList;
+    private List<FuliCategory.FuliBeans> fuliBeansList;
+    private List<AndroidCategory.AndroidBean> androidBeanList;
     private Context context;
+    private String publishAt;
 
-    public FuliImageAdapter(List<FuliCategory.FuliBeans> fuliCategoryList,Context context){
-        this.fuliCategoryList = fuliCategoryList;
+    public FuliImageAdapter(GankBeanData gankBeanData, Context context){
+        this.fuliBeansList = gankBeanData.getFuliBeans();
+        this.androidBeanList = gankBeanData.getAndroidBeans();
         this.context = context;
     }
 
@@ -33,23 +38,29 @@ public class FuliImageAdapter extends RecyclerView.Adapter<FuliImageAdapter.Fuli
     public FuliViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.fuli_item,parent,false);
         FuliViewHolder holder = new FuliViewHolder(view);
-
         return holder;
     }
 
     @Override
     public void onBindViewHolder(FuliViewHolder holder, final int position) {
-        Tools.loadImage(context,fuliCategoryList.get(position).getUrl(),holder.fuliItemImage);
-        Log.d(TAG,"fuliCategoryList.get(position).getUrl()" + fuliCategoryList.get(position).getUrl());
-        holder.fuliItemDate.setText(fuliCategoryList.get(position).getDesc());
-        holder.fuliItemContent.setText(fuliCategoryList.get(position).getDesc());
+        Tools.loadImage(context,fuliBeansList.get(position).getUrl(),holder.fuliItemImage);
+        //Log.d(TAG,"fuliCategoryList.get(position).getUrl()" + fuliBeansList.get(position).getUrl());
+        publishAt = fuliBeansList.get(position).getPublishedAt().substring(0,10);
+        holder.fuliItemDate.setText(fuliBeansList.get(position).getDesc());
+        for(AndroidCategory.AndroidBean bean:androidBeanList){
+            if(bean.getPublishedAt().contains(publishAt)){
+                holder.fuliItemContent.setText(bean.getDesc());
+                Log.d(TAG,"contains publishAt,publishAt is : " + publishAt);
+                break;
+            }
+        }
         //TODO to set content summary
 
         holder.fuliItemImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(context, FuliImageActivity.class);
-                intent.putExtra("fuli_url",fuliCategoryList.get(position).getUrl());
+                intent.putExtra("fuli_url",fuliBeansList.get(position).getUrl());
                 context.startActivity(intent);
             }
         });
@@ -57,7 +68,7 @@ public class FuliImageAdapter extends RecyclerView.Adapter<FuliImageAdapter.Fuli
 
     @Override
     public int getItemCount() {
-        return fuliCategoryList.size();
+        return fuliBeansList.size();
     }
 
     class FuliViewHolder extends RecyclerView.ViewHolder{

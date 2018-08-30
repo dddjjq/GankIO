@@ -14,7 +14,7 @@ import retrofit2.http.Path;
 
 public interface GankIOService {
 
-    @GET("Android/count/{count}/page{page}")
+    @GET("Android/{count}/{page}")
     Observable<AndroidCategory> getAndroidCategory(@Path("count")int count, @Path("page")int page);
 
     @GET("IOS/count/{count}/page{page}")

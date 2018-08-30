@@ -14,4 +14,6 @@ public class Constants {
     public static final String ANDROID_CATEGOTY_CACHE= "androidCategory";
     public static final String ANDROID_CATEGOTY_CACHE_KEY= "android_category";
 
+    public static final String ALL_CACHE = "allData";
+    public static final String ALL_CACHE_KEY = "all_data";
 }

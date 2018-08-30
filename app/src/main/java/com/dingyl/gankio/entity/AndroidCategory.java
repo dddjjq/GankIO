@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 public class AndroidCategory implements BaseCategory<AndroidCategory.AndroidBean>{
-    private int count;
     private boolean error;
 
     @Override
@@ -18,14 +17,6 @@ public class AndroidCategory implements BaseCategory<AndroidCategory.AndroidBean
 
     private ArrayList<AndroidBean> results;
 
-    public int getCount() {
-        return count;
-    }
-
-    public void setCount(int count) {
-        this.count = count;
-    }
-
     public boolean isError() {
         return error;
     }
@@ -36,13 +27,32 @@ public class AndroidCategory implements BaseCategory<AndroidCategory.AndroidBean
 
 
     public static class AndroidBean implements Serializable{
+        private String _id;
+        private String createdAt;
         private String desc;
-        private String ganhuo_id;
         private String publishedAt;
-        private String readability;
+        private String source;
         private String type;
         private String url;
+        private String[] images;
+        private boolean used;
         private String who;
+
+        public String get_id() {
+            return _id;
+        }
+
+        public void set_id(String _id) {
+            this._id = _id;
+        }
+
+        public String getCreatedAt() {
+            return createdAt;
+        }
+
+        public void setCreatedAt(String createdAt) {
+            this.createdAt = createdAt;
+        }
 
         public String getDesc() {
             return desc;
@@ -50,14 +60,6 @@ public class AndroidCategory implements BaseCategory<AndroidCategory.AndroidBean
 
         public void setDesc(String desc) {
             this.desc = desc;
-        }
-
-        public String getGanhuo_id() {
-            return ganhuo_id;
-        }
-
-        public void setGanhuo_id(String ganhuo_id) {
-            this.ganhuo_id = ganhuo_id;
         }
 
         public String getPublishedAt() {
@@ -68,12 +70,12 @@ public class AndroidCategory implements BaseCategory<AndroidCategory.AndroidBean
             this.publishedAt = publishedAt;
         }
 
-        public String getReadability() {
-            return readability;
+        public String getSource() {
+            return source;
         }
 
-        public void setReadability(String readability) {
-            this.readability = readability;
+        public void setSource(String source) {
+            this.source = source;
         }
 
         public String getType() {
@@ -92,6 +94,14 @@ public class AndroidCategory implements BaseCategory<AndroidCategory.AndroidBean
             this.url = url;
         }
 
+        public boolean isUsed() {
+            return used;
+        }
+
+        public void setUsed(boolean used) {
+            this.used = used;
+        }
+
         public String getWho() {
             return who;
         }
@@ -100,10 +110,13 @@ public class AndroidCategory implements BaseCategory<AndroidCategory.AndroidBean
             this.who = who;
         }
 
-        public String toString(){
-            return "   "+getDesc()+"\n";
+        public String[] getImages() {
+            return images;
         }
 
+        public void setImages(String[] images) {
+            this.images = images;
+        }
     }
 
     public String toString(){

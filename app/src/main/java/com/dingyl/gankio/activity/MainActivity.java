@@ -13,8 +13,11 @@ import android.widget.Toast;
 import com.dingyl.gankio.Adapter.FuliImageAdapter;
 import com.dingyl.gankio.R;
 import com.dingyl.gankio.activity.IViewBind.IMainActivity;
+import com.dingyl.gankio.entity.AndroidCategory;
 import com.dingyl.gankio.entity.BaseCategory;
 import com.dingyl.gankio.entity.FuliCategory;
+import com.dingyl.gankio.entity.GankBeanData;
+import com.dingyl.gankio.entity.GankData;
 import com.dingyl.gankio.presenter.FuliPresenter;
 import com.dingyl.gankio.utils.NetworkUtils;
 import com.dingyl.gankio.view.FuliView;
@@ -30,6 +33,7 @@ public class MainActivity extends AppCompatActivity implements IMainActivity{
     private MySwipeRefreshLayout swipeRefreshLayout;
     private FuliImageAdapter adapter;
     private List<FuliCategory.FuliBeans> fuliBeansList;
+    private List<AndroidCategory.AndroidBean> androidBeanList;
     private FuliPresenter fuliPresenter;
     private int mPage = 1;
     @Override
@@ -53,7 +57,7 @@ public class MainActivity extends AppCompatActivity implements IMainActivity{
             public void loadData() {
                 swipeRefreshLayout.setRefreshing(true);
                 mPage ++ ;
-                fuliPresenter.getFuliCategory(10,mPage);
+                fuliPresenter.getGankData(10,mPage);
             }
         });
     }
@@ -66,10 +70,11 @@ public class MainActivity extends AppCompatActivity implements IMainActivity{
 
     public void initData(){
         fuliBeansList = new ArrayList<>();
+        androidBeanList = new ArrayList<>();
         fuliPresenter = new FuliPresenter(this,this);
         fuliPresenter.onCreate();
         if(NetworkUtils.isNetWorkAvailable(this)){
-            fuliPresenter.getFuliCategory(10,1);
+            fuliPresenter.getGankData(10,1);
             Log.d(TAG,"isNetWorkAvailable");
         }else{
             fuliPresenter.loadCache();
@@ -85,14 +90,14 @@ public class MainActivity extends AppCompatActivity implements IMainActivity{
     }
 
     @Override
-    public void onSuccess(ArrayList<FuliCategory.FuliBeans> fuliBeans) {
-        if(fuliBeansList.containsAll(fuliBeans)){
-
-        }else{
-            fuliBeansList.addAll(fuliBeans);
+    public void onSuccess(GankBeanData gankBeanData) {
+        if(!fuliBeansList.containsAll(gankBeanData.getFuliBeans())){
+            fuliBeansList.addAll(gankBeanData.getFuliBeans());
         }
-
-        adapter = new FuliImageAdapter(fuliBeansList,this);
+        if(!androidBeanList.containsAll(gankBeanData.getAndroidBeans())){
+            androidBeanList.addAll(gankBeanData.getAndroidBeans());
+        }
+        adapter = new FuliImageAdapter(gankBeanData,this);
         fuliRecycler.setAdapter(adapter);
     }
 
@@ -128,7 +133,7 @@ public class MainActivity extends AppCompatActivity implements IMainActivity{
     SwipeRefreshLayout.OnRefreshListener onRefreshListener = new SwipeRefreshLayout.OnRefreshListener() {
         @Override
         public void onRefresh() {
-            fuliPresenter.getFuliCategory(10,1);
+            fuliPresenter.getGankData(10,1);
         }
     };
 
