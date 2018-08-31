@@ -56,19 +56,21 @@ public class FuliImageAdapter extends RecyclerView.Adapter<FuliImageAdapter.Fuli
         for(AndroidCategory.AndroidBean bean:androidBeanList){
             if(bean.getPublishedAt().contains(publishAt)){
                 holder.fuliItemContent.setText(bean.getDesc());
-                Log.d(TAG,"contains publishAt,publishAt is : " + publishAt);
+                //Log.d(TAG,"contains publishAt,publishAt is : " + publishAt);
                 break;
             }
         }
-        for(AndroidCategory.AndroidBean bean:androidBeanList){
-            if(bean.getPublishedAt().contains(publishAt)){
-                androidBeansListContent.add(bean);
-            }
-        }
         //TODO to set content summary
-        holder.fuliItemContent.setOnClickListener(new View.OnClickListener() {
+        holder.contentLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                androidBeansListContent.clear();
+                for(AndroidCategory.AndroidBean bean:androidBeanList){
+                    if(bean.getPublishedAt().contains(fuliBeansList.get(position).getPublishedAt().substring(0,10))){
+                        Log.d(TAG,"publishAt is : " + fuliBeansList.get(position).getPublishedAt().substring(0,10));
+                        androidBeansListContent.add(bean);
+                    }
+                }
                 Intent intent = new Intent(context, ContentActivity.class);
                 intent.setAction("intent_action_content");
                 intent.putExtra("content_list",androidBeansListContent);
