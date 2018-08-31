@@ -29,7 +29,8 @@
         <activity
             android:name=".activity.FuliImageActivity"
             android:theme="@style/FuliImage" />
-        <activity android:name=".activity.ContentActivity"></activity>
+        <activity android:name=".activity.ContentActivity" />
+        <activity android:name=".activity.WebActivity"></activity>
     </application>
 
 </manifest>
